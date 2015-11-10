@@ -1,49 +1,10 @@
-# Prelude
+# Objetivo
 
-> Role models are important. <br/>
-> -- Officer Alex J. Murphy / RoboCop
+El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas para el desarrollo de aplicaciones en Ruby on Rails 4. La misma está basada en [Ruby coding style guide](https://github.com/bbatsov/rails-style-guide) de [bbatsov](https://github.com/bbatsov).
 
-The goal of this guide is to present a set of best practices and style
-prescriptions for Ruby on Rails 4 development. It's a
-complementary guide to the already existing community-driven
-[Ruby coding style guide](https://github.com/bbatsov/ruby-style-guide).
+## Tabla de Contenidos
 
-Some of the advice here is applicable only to Rails 4.0+.
-
-You can generate a PDF or an HTML copy of this guide using
-[Transmuter](https://github.com/TechnoGate/transmuter).
-
-Translations of the guide are available in the following languages:
-
-* [Chinese Simplified](https://github.com/JuanitoFatas/rails-style-guide/blob/master/README-zhCN.md)
-* [Chinese Traditional](https://github.com/JuanitoFatas/rails-style-guide/blob/master/README-zhTW.md)
-* [German](https://github.com/arbox/de-rails-style-guide/blob/master/README-deDE.md)
-* [Japanese](https://github.com/satour/rails-style-guide/blob/master/README-jaJA.md)
-* [Russian](https://github.com/arbox/rails-style-guide/blob/master/README-ruRU.md)
-* [Turkish](https://github.com/tolgaavci/rails-style-guide/blob/master/README-trTR.md)
-* [Korean](https://github.com/pureugong/rails-style-guide/blob/master/README-koKR.md)
-
-# The Rails Style Guide
-
-This Rails style guide recommends best practices so that real-world Rails
-programmers can write code that can be maintained by other real-world Rails
-programmers. A style guide that reflects real-world usage gets used, and a
-style guide that holds to an ideal that has been rejected by the people it
-is supposed to help risks not getting used at all &ndash; no matter how good
-it is.
-
-The guide is separated into several sections of related rules. I've tried to add
-the rationale behind the rules (if it's omitted I've assumed it's pretty
-obvious).
-
-I didn't come up with all the rules out of nowhere - they are mostly based on my
-extensive career as a professional software engineer, feedback and suggestions
-from members of the Rails community and various highly regarded Rails
-programming resources.
-
-## Table of Contents
-
-* [Configuration](#configuration)
+* [Configuración](#configuration)
 * [Routing](#routing)
 * [Controllers](#controllers)
 * [Models](#models)
@@ -61,21 +22,18 @@ programming resources.
 ## Configuration
 
 * <a name="config-initializers"></a>
-  Put custom initialization code in `config/initializers`. The code in
-  initializers executes on application startup.
+  Las configuraciones de inicialización deben ir en `config/initializers`. El código ubicado en initializers es ejecutado al inicio de la aplicación.
 <sup>[[link](#config-initializers)]</sup>
 
 * <a name="gem-initializers"></a>
-  Keep initialization code for each gem in a separate file with the same name
-  as the gem, for example `carrierwave.rb`, `active_admin.rb`, etc.
+  Mantener la inicialización de cada gema en un archivo separado con el mismo nombre de la gema, por ejemplo `carrierwave.rb`, `active_admin.rb`, etc.
 <sup>[[link](#gem-initializers)]</sup>
 
 * <a name="dev-test-prod-configs"></a>
-  Adjust accordingly the settings for development, test and production
-  environment (in the corresponding files under `config/environments/`)
+  Los ajustes particulares a cada entorno (development, test y production) deben ir en el archivo correspondiente (`config/environments/`)
 <sup>[[link](#dev-test-prod-configs)]</sup>
 
-  * Mark additional assets for precompilation (if any):
+  * Marcar assets adicionales para precompilación (en caso de ser necesario):
 
     ```Ruby
     # config/environments/production.rb
@@ -85,20 +43,18 @@ programming resources.
     ```
 
 * <a name="app-config"></a>
-  Keep configuration that's applicable to all environments in the
-  `config/application.rb` file.
+  Mantener la configuración común a todos los entornos en el archivo `config/application.rb`.
 <sup>[[link](#app-config)]</sup>
 
 * <a name="staging-like-prod"></a>
-  Create an additional `staging` environment that closely resembles the
-  `production` one.
+  Crear un entorno adicional `staging` "similar" al entorno `production`.
 <sup>[[link](#staging-like-prod)]</sup>
 
 * <a name="yaml-config"></a>
-  Keep any additional configuration in YAML files under the `config/` directory.
+  Mantener cualquier configuración adicional en archivos YAML en el directorio `config/`.
 <sup>[[link](#yaml-config)]</sup>
 
-  Since Rails 4.2 YAML configuration files can be easily loaded with the new `config_for` method:
+  A partir de Rails 4.2 los archivos de configuración YAML puede ser facilmente cargados con el método `config_for`:
 
   ```Ruby
   Rails::Application.config_for(:yaml_file)

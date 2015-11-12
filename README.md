@@ -177,18 +177,12 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
 
 ## Models
 
-* <a name="model-classes"></a>
-  Introduce non-ActiveRecord model classes freely.
-<sup>[[link](#model-classes)]</sup>
-
 * <a name="meaningful-model-names"></a>
-  Name the models with meaningful (but short) names without abbreviations.
+  Nombrar los modelos con nombre significativos (pero cortos) sin abreviaciones.
 <sup>[[link](#meaningful-model-names)]</sup>
 
 * <a name="activeattr-gem"></a>
-  If you need model objects that support ActiveRecord behavior (like validation)
-  without the ActiveRecord database functionality use the
-  [ActiveAttr](https://github.com/cgriego/active_attr) gem.
+  Si se necesitan modelos que soporten comportamiento de ActiveRecord (como validaciones) sin funcionalidad de base datos utilizar la gema [ActiveAttr](https://github.com/cgriego/active_attr).
 <sup>[[link](#activeattr-gem)]</sup>
 
   ```Ruby
@@ -208,18 +202,16 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   end
   ```
 
-  For a more complete example refer to the
-  [RailsCast on the subject](http://railscasts.com/episodes/326-activeattr).
+  Para un ejemplo más claro: [RailsCast on the subject](http://railscasts.com/episodes/326-activeattr).
 
 ### ActiveRecord
 
 * <a name="keep-ar-defaults"></a>
-  Avoid altering ActiveRecord defaults (table names, primary key, etc) unless
-  you have a very good reason (like a database that's not under your control).
+  Apegarse a la configuración por defecto de ActiveRecord (nombre de talbas, primary key, etc) a no ser que se tenga una buena razón para no hacerlo.
 <sup>[[link](#keep-ar-defaults)]</sup>
 
   ```Ruby
-  # bad - don't do this if you can modify the schema
+  # :(
   class Transaction < ActiveRecord::Base
     self.table_name = 'order'
     ...
@@ -227,52 +219,51 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="macro-style-methods"></a>
-  Group macro-style methods (`has_many`, `validates`, etc) in the beginning of
-  the class definition.
+  Agrupar métodos como `has_many`, `validates`, etc al comienzo de la definición de la clase.
 <sup>[[link](#macro-style-methods)]</sup>
 
   ```Ruby
   class User < ActiveRecord::Base
-    # keep the default scope first (if any)
+    # mantener el default_scope al comienzo
     default_scope { where(active: true) }
 
-    # constants come up next
+    # luego las constantes
     COLORS = %w(red green blue)
 
-    # afterwards we put attr related macros
+    # luego macros attr
     attr_accessor :formatted_date_of_birth
 
     attr_accessible :login, :first_name, :last_name, :email, :password
 
-    # followed by association macros
+    # asociaciones
     belongs_to :country
 
     has_many :authentications, dependent: :destroy
 
-    # and validation macros
+    # validaciones
     validates :email, presence: true
     validates :username, presence: true
     validates :username, uniqueness: { case_sensitive: false }
     validates :username, format: { with: /\A[A-Za-z][A-Za-z0-9._-]{2,19}\z/ }
     validates :password, format: { with: /\A\S{8,128}\z/, allow_nil: true }
 
-    # next we have callbacks
+    # callbacks
     before_save :cook
     before_save :update_username_lower
 
-    # other macros (like devise's) should be placed after the callbacks
+    # otras macros (como devise) deben ir después de los callbacks
 
     ...
   end
   ```
 
 * <a name="has-many-through"></a>
-  Prefer `has_many :through` to `has_and_belongs_to_many`. Using `has_many
-  :through` allows additional attributes and validations on the join model.
+  Escoger `has_many :through` ante `has_and_belongs_to_many`. La utilización de `has_many
+  :through` permite añadir atributos adiciones y validaciones en el modelo intermedio.
 <sup>[[link](#has-many-through)]</sup>
 
   ```Ruby
-  # not so good - using has_and_belongs_to_many
+  # :/
   class User < ActiveRecord::Base
     has_and_belongs_to_many :groups
   end
@@ -281,7 +272,7 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
     has_and_belongs_to_many :users
   end
 
-  # prefered way - using has_many :through
+  # :)
   class User < ActiveRecord::Base
     has_many :memberships
     has_many :groups, through: :memberships
@@ -299,63 +290,62 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="read-attribute"></a>
-  Prefer `self[:attribute]` over `read_attribute(:attribute)`.
+  Escoger `self[:attribute]` ante `read_attribute(:attribute)`.
 <sup>[[link](#read-attribute)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   def amount
     read_attribute(:amount) * 100
   end
 
-  # good
+  # :)
   def amount
     self[:amount] * 100
   end
   ```
 
 * <a name="write-attribute"></a>
-  Prefer `self[:attribute] = value` over `write_attribute(:attribute, value)`.
+  Escoger `self[:attribute] = value` ante `write_attribute(:attribute, value)`.
 <sup>[[link](#write-attribute)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   def amount
     write_attribute(:amount, 100)
   end
 
-  # good
+  # :)
   def amount
     self[:amount] = 100
   end
   ```
 
 * <a name="sexy-validations"></a>
-  Always use the new ["sexy"
+  Utilizar las ["sexy"
   validations](http://thelucid.com/2010/01/08/sexy-validation-in-edge-rails-rails-3/).
 <sup>[[link](#sexy-validations)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   validates_presence_of :email
   validates_length_of :email, maximum: 100
 
-  # good
+  # :)
   validates :email, presence: true, length: { maximum: 100 }
   ```
 
 * <a name="custom-validator-file"></a>
-  When a custom validation is used more than once or the validation is some
-  regular expression mapping, create a custom validator file.
+  Cuando se utiliza una custom validation más de una vez o la validación es un mapeo de expresión regular se debe crear un custom validator.
 <sup>[[link](#custom-validator-file)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   class Person
     validates :email, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i }
   end
 
-  # good
+  # :)
   class EmailValidator < ActiveModel::EachValidator
     def validate_each(record, attribute, value)
       record.errors[attribute] << (options[:message] || 'is not a valid email') unless value =~ /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i
@@ -368,16 +358,15 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="app-validators"></a>
-  Keep custom validators under `app/validators`.
+  Mantener los custom validators en `app/validators`.
 <sup>[[link](#app-validators)]</sup>
 
 * <a name="custom-validators-gem"></a>
-  Consider extracting custom validators to a shared gem if you're maintaining
-  several related apps or the validators are generic enough.
+  Considerar extrar los custom validators en una gema compartida si se va a utilizar en múltiples projectos.
 <sup>[[link](#custom-validators-gem)]</sup>
 
 * <a name="named-scopes"></a>
-  Use named scopes freely.
+  Utilizar todos los scopes que se desee.
 <sup>[[link](#named-scopes)]</sup>
 
   ```Ruby
@@ -390,10 +379,7 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="named-scope-class"></a>
-  When a named scope defined with a lambda and parameters becomes too
-  complicated, it is preferable to make a class method instead which serves the
-  same purpose of the named scope and returns an `ActiveRecord::Relation`
-  object. Arguably you can define even simpler scopes like this.
+  Cuando un scope definido con lambra y los parámetros se tornan muy complejos es preferible crear un método de clase y retornar un objeto `ActiveRecord::Relation`. 
 
 <sup>[[link](#named-scope-class)]</sup>
 
@@ -406,21 +392,16 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="beware-update-attribute"></a>
-  Beware of the behavior of the
+  Tener en cuenta el comportamiento del método
   [`update_attribute`](http://api.rubyonrails.org/classes/ActiveRecord/Persistence.html#method-i-update_attribute)
-  method. It doesn't run the model validations (unlike `update_attributes`) and
-  could easily corrupt the model state.
+  . No ejecuta las validaciones del modelo.
 <sup>[[link](#beware-update-attribute)]</sup>
 
 * <a name="user-friendly-urls"></a>
-  Use user-friendly URLs. Show some descriptive attribute of the model in the URL
-  rather than its `id`.  There is more than one way to achieve this:
+  Utilizar friendly URLs. Mostrar un atributo descriptivo del modelo en la URL y el `id`.  Hay más de una forma de realizar esto:
 <sup>[[link](#user-friendly-urls)]</sup>
 
-  * Override the `to_param` method of the model. This method is used by Rails
-    for constructing a URL to the object.  The default implementation returns
-    the `id` of the record as a String.  It could be overridden to include another
-    human-readable attribute.
+  * Sobreescribir el método `to_param` del modelo. Este método es utilizado por Rails para construir la URL para el objeto. La implementación por default retorna el `id` del registro como String. Puede ser sobreescrito para incluir otro atributo más amigable.
 
       ```Ruby
       class Person
@@ -430,12 +411,9 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
       end
       ```
 
-  In order to convert this to a URL-friendly value, `parameterize` should be
-  called on the string. The `id` of the object needs to be at the beginning so
-  that it can be found by the `find` method of ActiveRecord.
+  Para convertir la URL, debe ser invocado `parameterize` en el string. El atributo `id` del objeto debe estar al compienzo para que luego pueda ser encontrado por el método `find` de ActiveRecord.
 
-  * Use the `friendly_id` gem. It allows creation of human-readable URLs by
-    using some descriptive attribute of the model instead of its `id`.
+  * Utilizar la gema `friendly_id` gem. Permite crear URLs amigables utilizando algún atributo descriptivo del modelo en lugar del `id`.
 
       ```Ruby
       class Person
@@ -444,20 +422,16 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
       end
       ```
 
-  Check the [gem documentation](https://github.com/norman/friendly_id) for more
-  information about its usage.
+  Ver la [gema](https://github.com/norman/friendly_id) para obtener más información.
 
 * <a name="find-each"></a>
-  Use `find_each` to iterate over a collection of AR objects. Looping through a
-  collection of records from the database (using the `all` method, for example)
-  is very inefficient since it will try to instantiate all the objects at once.
-  In that case, batch processing methods allow you to work with the records in
-  batches, thereby greatly reducing memory consumption.
+  Utilizar `find_each` para iterar sobre objetos AR. Iterar sobre una colección de registros de una Base de Datos (utilizando el método `all`, por ejemplo) es muy ineficiente ya que intentará instanciar todos los objetos al mismo tiempo.
+  En ese caso, se deberían utilizar métodos de procesamiento en lotes para reducir el consumo de memoria.
 <sup>[[link](#find-each)]</sup>
 
 
   ```Ruby
-  # bad
+  # :(
   Person.all.each do |person|
     person.do_awesome_stuff
   end
@@ -466,7 +440,7 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
     person.party_all_night!
   end
 
-  # good
+  # :)
   Person.find_each do |person|
     person.do_awesome_stuff
   end
@@ -477,13 +451,11 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="before_destroy"></a>
-  Since [Rails creates callbacks for dependent
-  associations](https://github.com/rails/rails/issues/3458), always call
-  `before_destroy` callbacks that perform validation with `prepend: true`.
+  Dado que [Rails crea callbacks para asociaciones dependientes](https://github.com/rails/rails/issues/3458), siempre invoca al callback `before_destroy` que realiza validaciones con `prepend: true`.
 <sup>[[link](#before_destroy)]</sup>
 
   ```Ruby
-  # bad (roles will be deleted automatically even if super_admin? is true)
+  # :( (los roles serán eliminados automaticamente a pesar de ser super_admin? es true)
   has_many :roles, dependent: :destroy
 
   before_destroy :ensure_deletable
@@ -492,45 +464,42 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
     fail "Cannot delete super admin." if super_admin?
   end
 
-  # good
+  # :)
   has_many :roles, dependent: :destroy
 
   before_destroy :ensure_deletable, prepend: true
 
   def ensure_deletable
-    fail "Cannot delete super admin." if super_admin?
+    fail "No se puede eliminar el administrador." if super_admin?
   end
   ```
 
 ### ActiveRecord Queries
 
 * <a name="avoid-interpolation"></a>
-  Avoid string interpolation in
-  queries, as it will make your code susceptible to SQL injection
-  attacks.
+  Evitar la interpolación en las queries, previniendo ataques por SQL injection.
 <sup>[[link](#avoid-interpolation)]</sup>
 
   ```Ruby
-  # bad - param will be interpolated unescaped
+  # :( 
   Client.where("orders_count = #{params[:orders]}")
 
-  # good - param will be properly escaped
+  # :)
   Client.where('orders_count = ?', params[:orders])
   ```
 
 * <a name="named-placeholder"></a>
-  Consider using named placeholders instead of positional placeholders
-  when you have more than 1 placeholder in your query.
+  Considerar la utilización de placeholders nombrados en lugar de placeholders posicionales.
 <sup>[[link](#named-placeholder)]</sup>
 
   ```Ruby
-  # okish
+  # :/
   Client.where(
     'created_at >= ? AND created_at <= ?',
     params[:start_date], params[:end_date]
   )
 
-  # good
+  # :)
   Client.where(
     'created_at >= :start_date AND created_at <= :end_date',
     start_date: params[:start_date], end_date: params[:end_date]
@@ -538,64 +507,58 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="find"></a>
-  Favor the use of `find` over `where`
-when you need to retrieve a single record by id.
+  Utilizar `find` en lugar de `where` cuando se necesita recuperar un único registro por id.
 <sup>[[link](#find)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   User.where(id: id).take
 
-  # good
+  # :)
   User.find(id)
   ```
 
 * <a name="find_by"></a>
-  Favor the use of `find_by` over `where`
-when you need to retrieve a single record by some attributes.
+  Utilizar `find_by` en lugar de `where` cuando se necesita recuperar un único registro por varios atributos.
 <sup>[[link](#find_by)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   User.where(first_name: 'Bruce', last_name: 'Wayne').first
 
-  # good
+  # :)
   User.find_by(first_name: 'Bruce', last_name: 'Wayne')
   ```
 
 * <a name="find_each"></a>
-  Use `find_each` when you need to process a lot of records.
+  Utilizar `find_each` cuando se necesite procesar muchos registros.
 <sup>[[link](#find_each)]</sup>
 
   ```Ruby
-  # bad - loads all the records at once
-  # This is very inefficient when the users table has thousands of rows.
+  # :(
   User.all.each do |user|
     NewsMailer.weekly(user).deliver_now
   end
 
-  # good - records are retrieved in batches
+  # :)
   User.find_each do |user|
     NewsMailer.weekly(user).deliver_now
   end
   ```
 
 * <a name="where-not"></a>
-  Favor the use of `where.not` over SQL.
+  Utilizar `where.not` en lugar de SQL.
 <sup>[[link](#where-not)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   User.where("id != ?", id)
 
-  # good
+  # :)
   User.where.not(id: id)
   ```
 * <a name="squished-heredocs"></a>
-  When specifying an explicit query in a method such as `find_by_sql`, use
-  heredocs with `squish`. This allows you to legibly format the SQL with
-  line breaks and indentations, while supporting syntax highlighting in many
-  tools (including GitHub, Atom, and RubyMine).
+  Cuando se especifica una query en un método como `find_by_sql`, utilizar `squish`. Este permite formatear el SQL de manera legible a través de saltos de línea e indentaciones.
 <sup>[[link](#squished-heredocs)]</sup>
 
   ```Ruby
@@ -610,13 +573,6 @@ when you need to retrieve a single record by some attributes.
       accounts.user_id = users.id
     # further complexities...
   SQL
-  ```
-
-  [`String#squish`](http://apidock.com/rails/String/squish) removes the indentation and newline characters so that your server
-  log shows a fluid string of SQL rather than something like this:
-
-  ```
-  SELECT\n    users.id, accounts.plan\n  FROM\n    users\n  INNER JOIN\n    acounts\n  ON\n    accounts.user_id = users.id
   ```
 
 ## Migrations

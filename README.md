@@ -164,18 +164,15 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
 ## Controllers
 
 * <a name="skinny-controllers"></a>
-  Keep the controllers skinny - they should only retrieve data for the view
-  layer and shouldn't contain any business logic (all the business logic
-  should naturally reside in the model).
+  Mantener los controllers "livianos" - sólo deben recuperar datos para la vista y no deberían contener lógica de negocio (la lógica de negocio está contenida en los models).
 <sup>[[link](#skinny-controllers)]</sup>
 
 * <a name="one-method"></a>
-  Each controller action should (ideally) invoke only one method other than an
-  initial find or new.
+  Cada acción del controller debe (idealmente) invocar un solo método además de un find o new.
 <sup>[[link](#one-method)]</sup>
 
 * <a name="shared-instance-variables"></a>
-  Share no more than two instance variables between a controller and a view.
+  Compartir no más de 2 variables de instancias entre controller y view.
 <sup>[[link](#shared-instance-variables)]</sup>
 
 ## Models

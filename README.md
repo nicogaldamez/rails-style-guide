@@ -63,54 +63,51 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
 ## Routing
 
 * <a name="member-collection-routes"></a>
-  When you need to add more actions to a RESTful resource (do you really need
-  them at all?) use `member` and `collection` routes.
+ Cuando se necesitan añadir acciones a un resource RESTful se deben usar las rutas `member` y `collection`.
 <sup>[[link](#member-collection-routes)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   get 'subscriptions/:id/unsubscribe'
   resources :subscriptions
 
-  # good
+  # :)
   resources :subscriptions do
     get 'unsubscribe', on: :member
   end
 
-  # bad
+  # :(
   get 'photos/search'
   resources :photos
 
-  # good
+  # :)
   resources :photos do
     get 'search', on: :collection
   end
   ```
 
 * <a name="many-member-collection-routes"></a>
-  If you need to define multiple `member/collection` routes use the
-  alternative block syntax.
+  Si se necesitan definir múltiples rutas `member/collection` se debe utilizar la sintaxis de bloque.
 <sup>[[link](#many-member-collection-routes)]</sup>
 
   ```Ruby
   resources :subscriptions do
     member do
       get 'unsubscribe'
-      # more routes
+      # más rutas
     end
   end
 
   resources :photos do
     collection do
       get 'search'
-      # more routes
+      # más rutas
     end
   end
   ```
 
 * <a name="nested-routes"></a>
-  Use nested routes to express better the relationship between ActiveRecord
-  models.
+  Utilizar nested routes para expresar de una mejor forma la relación entre modelos ActiveRecord.
 <sup>[[link](#nested-routes)]</sup>
 
   ```Ruby
@@ -129,7 +126,7 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
   
 * <a name="namespaced-routes"></a>
-  If you need to nest routes more than 1 level deep then use the `shallow: true` option. This will save user from long urls `posts/1/comments/5/versions/7/edit` and you from long url helpers `edit_post_comment_version`.
+  Si se necesitan rutas nested de más de un nivel se debe utilizar la opción `shallow: true` option. De esta forma se evitan largas urls como `posts/1/comments/5/versions/7/edit` y largos url helpers como `edit_post_comment_version`.
   
   ```Ruby
   resources :posts, shallow: true do
@@ -140,29 +137,28 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="namespaced-routes"></a>
-  Use namespaced routes to group related actions.
+  Utilizar namespaced routes para agrupar acciones relacionadas.
 <sup>[[link](#namespaced-routes)]</sup>
 
   ```Ruby
   namespace :admin do
-    # Directs /admin/products/* to Admin::ProductsController
+    # Direcciona /admin/products/* a Admin::ProductsController
     # (app/controllers/admin/products_controller.rb)
     resources :products
   end
   ```
 
 * <a name="no-wild-routes"></a>
-  Never use the legacy wild controller route. This route will make all actions
-  in every controller accessible via GET requests.
+ Nunca utilizar rutas de esta forma ya que habilitan el acceso a todas las rutas del controller a través de requests GET.
 <sup>[[link](#no-wild-routes)]</sup>
 
   ```Ruby
-  # very bad
+  # :(
   match ':controller(/:action(/:id(.:format)))'
   ```
 
 * <a name="no-match-routes"></a>
-  Don't use `match` to define any routes unless there is need to map multiple request types among `[:get, :post, :patch, :put, :delete]` to a single action using `:via` option.
+  No utilizar `match` para refinir rutas a no ser que sea necesario mappear múltiples tipos de requests `[:get, :post, :patch, :put, :delete]` a una única acción. Utilizar la opción `:via`.
 <sup>[[link](#no-match-routes)]</sup>
 
 ## Controllers

@@ -722,47 +722,33 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
 
 ## Assets
 
-Use the [assets pipeline](http://guides.rubyonrails.org/asset_pipeline.html) to leverage organization within
-your application.
+Utilziar el [assets pipeline](http://guides.rubyonrails.org/asset_pipeline.html) .
 
 * <a name="reserve-app-assets"></a>
-  Reserve `app/assets` for custom stylesheets, javascripts, or images.
+  Reservar `app/assets` para css, javascripts, e images personalizadas.
 <sup>[[link](#reserve-app-assets)]</sup>
 
 * <a name="lib-assets"></a>
-  Use `lib/assets` for your own libraries that don’t really fit into the
-  scope of the application.
+  Utilizar `lib/assets` para tus propias bibliotecas que no son específicas del proyecto.
 <sup>[[link](#lib-assets)]</sup>
 
 * <a name="vendor-assets"></a>
-  Third party code such as [jQuery](http://jquery.com/) or
-  [bootstrap](http://twitter.github.com/bootstrap/) should be placed in
-  `vendor/assets`.
+  Código de terceros como [jQuery](http://jquery.com/) or
+  [bootstrap](http://twitter.github.com/bootstrap/) debe ubicarse en `vendor/assets`.
 <sup>[[link](#vendor-assets)]</sup>
-
-* <a name="gem-assets"></a>
-  When possible, use gemified versions of assets (e.g.
-  [jquery-rails](https://github.com/rails/jquery-rails),
-  [jquery-ui-rails](https://github.com/joliss/jquery-ui-rails),
-  [bootstrap-sass](https://github.com/thomas-mcdonald/bootstrap-sass),
-  [zurb-foundation](https://github.com/zurb/foundation)).
-<sup>[[link](#gem-assets)]</sup>
 
 ## Mailers
 
 * <a name="mailer-name"></a>
-  Name the mailers `SomethingMailer`. Without the Mailer suffix it isn't
-  immediately apparent what's a mailer and which views are related to the
-  mailer.
+  Nombrar los mailer así: `SomethingMailer`. .
 <sup>[[link](#mailer-name)]</sup>
 
 * <a name="html-plain-email"></a>
-  Provide both HTML and plain-text view templates.
+  Proveer las versiones HTML y texto plano.
 <sup>[[link](#html-plain-email)]</sup>
 
 * <a name="enable-delivery-errors"></a>
-  Enable errors raised on failed mail delivery in your development environment.
-  The errors are disabled by default.
+  Habilitar los errores en el entorno de desarrollo. Estos errores son deshabilitados por defecto
 <sup>[[link](#enable-delivery-errors)]</sup>
 
   ```Ruby
@@ -770,25 +756,8 @@ your application.
 
   config.action_mailer.raise_delivery_errors = true
   ```
-
-* <a name="local-smtp"></a>
-  Use a local SMTP server like
-  [Mailcatcher](https://github.com/sj26/mailcatcher) in the development
-  environment.
-<sup>[[link](#local-smtp)]</sup>
-
-  ```Ruby
-  # config/environments/development.rb
-
-  config.action_mailer.smtp_settings = {
-    address: 'localhost',
-    port: 1025,
-    # more settings
-  }
-  ```
-
 * <a name="default-hostname"></a>
-  Provide default settings for the host name.
+  Proveer una configuración por defecto para el host name.
 <sup>[[link](#default-hostname)]</sup>
 
   ```Ruby
@@ -798,38 +767,36 @@ your application.
   # config/environments/production.rb
   config.action_mailer.default_url_options = { host: 'your_site.com' }
 
-  # in your mailer class
+  # en la clase mailer
   default_url_options[:host] = 'your_site.com'
   ```
 
 * <a name="url-not-path-in-email"></a>
-  If you need to use a link to your site in an email, always use the `_url`, not
-  `_path` methods. The `_url` methods include the host name and the `_path`
-  methods don't.
+  Si se necesitan utilizar links en el email, siempre utilizar `_url`, en lugar de
+  `_path`. `_url` incluye el nombre del host.
 <sup>[[link](#url-not-path-in-email)]</sup>
 
   ```Ruby
-  # bad
-  You can always find more info about this course
+  # :(
+  Encuentra más información sobre el curso
   <%= link_to 'here', course_path(@course) %>
 
-  # good
-  You can always find more info about this course
+  # :)
+  Encuentra más información sobre el curso
   <%= link_to 'here', course_url(@course) %>
   ```
 
 * <a name="email-addresses"></a>
-  Format the from and to addresses properly. Use the following format:
+  Setear correctamente from y to. Utilizar el siguiente formato:
 <sup>[[link](#email-addresses)]</sup>
 
   ```Ruby
-  # in your mailer class
-  default from: 'Your Name <info@your_site.com>'
+  # en la clase mailer
+  default from: 'Tu Nombre <info@your_site.com>'
   ```
 
 * <a name="delivery-method-test"></a>
-  Make sure that the e-mail delivery method for your test environment is set to
-  `test`:
+  Asegurarse que el método delivery en test está seteado como `test`:
 <sup>[[link](#delivery-method-test)]</sup>
 
   ```Ruby
@@ -839,7 +806,7 @@ your application.
   ```
 
 * <a name="delivery-method-smtp"></a>
-  The delivery method for development and production should be `smtp`:
+  El método de delivery en development y production debe ser `smtp`:
 <sup>[[link](#delivery-method-smtp)]</sup>
 
   ```Ruby
@@ -849,25 +816,19 @@ your application.
   ```
 
 * <a name="inline-email-styles"></a>
-  When sending html emails all styles should be inline, as some mail clients
-  have problems with external styles. This however makes them harder to maintain
-  and leads to code duplication. There are two similar gems that transform the
-  styles and put them in the corresponding html tags:
+  Cuando se envían emails los estilos deben estar inline. 2 gemas para facilitar esto:
   [premailer-rails](https://github.com/fphilipe/premailer-rails) and
   [roadie](https://github.com/Mange/roadie).
 <sup>[[link](#inline-email-styles)]</sup>
 
 * <a name="background-email"></a>
-  Sending emails while generating page response should be avoided. It causes
-  delays in loading of the page and request can timeout if multiple email are
-  sent. To overcome this emails can be sent in background process with the help
-  of [sidekiq](https://github.com/mperham/sidekiq) gem.
+  Enviar emails mientras se genera la respuesta debe evitarse. Para ello utilizar la gema [sidekiq](https://github.com/mperham/sidekiq).
 <sup>[[link](#background-email)]</sup>
 
 ## Time
 
 * <a name="tz-config"></a>
-  Config your timezone accordingly in `application.rb`.
+  Configurar el timezone en `application.rb`.
 <sup>[[link](#tz-config)]</sup>
 
   ```Ruby
@@ -877,26 +838,26 @@ your application.
   ```
 
 * <a name="time-parse"></a>
-  Don't use `Time.parse`.
+  No utilizar `Time.parse`.
 <sup>[[link](#time-parse)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   Time.parse('2015-03-02 19:05:37') # => Will assume time string given is in the system's time zone.
 
-  # good
+  # :)
   Time.zone.parse('2015-03-02 19:05:37') # => Mon, 02 Mar 2015 19:05:37 EET +02:00
   ```
 
 * <a name="time-now"></a>
-  Don't use `Time.now`.
+  No utilizar `Time.now`.
 <sup>[[link](#time-now)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   Time.now # => Returns system time and ignores your configured time zone.
 
-  # good
+  # :)
   Time.zone.now # => Fri, 12 Mar 2014 22:04:47 EET +02:00
   Time.current # Same thing but shorter.
   ```
@@ -904,26 +865,16 @@ your application.
 ## Bundler
 
 * <a name="dev-test-gems"></a>
-  Put gems used only for development or testing in the appropriate group in the
-  Gemfile.
+  Ubicar las gemas utilizar solo para desarrollo o testing en el grupo apropiado en el Gemfile.
 <sup>[[link](#dev-test-gems)]</sup>
 
-* <a name="only-good-gems"></a>
-  Use only established gems in your projects. If you're contemplating on
-  including some little-known gem you should do a careful review of its source
-  code first.
-<sup>[[link](#only-good-gems)]</sup>
-
 * <a name="os-specific-gemfile-locks"></a>
-  OS-specific gems will by default result in a constantly changing
-  `Gemfile.lock` for projects with multiple developers using different operating
-  systems.  Add all OS X specific gems to a `darwin` group in the Gemfile, and
-  all Linux specific gems to a `linux` group:
+  Las gemas específicas de un sistema operativo deben ubicarse en el grupo correspondiente:
 <sup>[[link](#os-specific-gemfile-locks)]</sup>
 
   ```Ruby
   # Gemfile
-  group :darwin do
+  group :darwin do # OSX
     gem 'rb-fsevent'
     gem 'growl'
   end
@@ -933,8 +884,7 @@ your application.
   end
   ```
 
-  To require the appropriate gems in the right environment, add the
-  following to `config/application.rb`:
+  Para requerir las gemas apropiadas según el entorno añadir lo siguiente a `config/application.rb`:
 
   ```Ruby
   platform = RUBY_PLATFORM.match(/(linux|darwin)/)[0].to_sym
@@ -942,22 +892,11 @@ your application.
   ```
 
 * <a name="gemfile-lock"></a>
-  Do not remove the `Gemfile.lock` from version control. This is not some
-  randomly generated file - it makes sure that all of your team members get the
-  same gem versions when they do a `bundle install`.
+  No quitar `Gemfile.lock` del control de versiones.
 <sup>[[link](#gemfile-lock)]</sup>
 
-## Managing processes
 
-* <a name="foreman"></a>
-  If your projects depends on various external processes use
-  [foreman](https://github.com/ddollar/foreman) to manage them.
-<sup>[[link](#foreman)]</sup>
-
-# Further Reading
-
-There are a few excellent resources on Rails style, that you should consider if
-you have time to spare:
+# Más Info
 
 * [The Rails 4 Way](http://www.amazon.com/The-Rails-Addison-Wesley-Professional-Ruby/dp/0321944275)
 * [Ruby on Rails Guides](http://guides.rubyonrails.org/)
@@ -966,36 +905,9 @@ you have time to spare:
 * [Everyday Rails Testing with RSpec](https://leanpub.com/everydayrailsrspec)
 * [Better Specs for RSpec](http://betterspecs.org)
 
-# Contributing
-
-Nothing written in this guide is set in stone. It's my desire to work together
-with everyone interested in Rails coding style, so that we could ultimately
-create a resource that will be beneficial to the entire Ruby community.
-
-Feel free to open tickets or send pull requests with improvements. Thanks in
-advance for your help!
-
-You can also support the project (and RuboCop) with financial contributions via
-[gittip](https://www.gittip.com/bbatsov).
-
-[![Support via Gittip](https://rawgithub.com/twolfson/gittip-badge/0.2.0/dist/gittip.png)](https://www.gittip.com/bbatsov)
-
-## How to Contribute?
-
-It's easy, just follow the [contribution guidelines](https://github.com/bbatsov/rails-style-guide/blob/master/CONTRIBUTING.md).
-
 # License
 
 ![Creative Commons License](http://i.creativecommons.org/l/by/3.0/88x31.png)
 This work is licensed under a [Creative Commons Attribution 3.0 Unported
 License](http://creativecommons.org/licenses/by/3.0/deed.en_US)
 
-# Spread the Word
-
-A community-driven style guide is of little use to a community that doesn't know
-about its existence. Tweet about the guide, share it with your friends and
-colleagues. Every comment, suggestion or opinion we get makes the guide just a
-little bit better. And we want to have the best possible guide, don't we?
-
-Cheers,<br/>
-[Bozhidar](https://twitter.com/bbatsov)

@@ -202,7 +202,7 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   end
   ```
 
-  Para un ejemplo más claro: [RailsCast on the subject](http://railscasts.com/episodes/326-activeattr).
+  Para un ejemplo más claro: [RailsCast](http://railscasts.com/episodes/326-activeattr).
 
 ### ActiveRecord
 
@@ -578,45 +578,34 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
 ## Migrations
 
 * <a name="schema-version"></a>
-  Keep the `schema.rb` (or `structure.sql`) under version control.
+  Mantener `schema.rb` (o `structure.sql`) bajo control de versiones.
 <sup>[[link](#schema-version)]</sup>
 
 * <a name="db-schema-load"></a>
-  Use `rake db:schema:load` instead of `rake db:migrate` to initialize an empty
-  database.
+  Utilizar `rake db:schema:load` en lugar de `rake db:migrate` para inicializar una base de datos vacía.
 <sup>[[link](#db-schema-load)]</sup>
 
 * <a name="default-migration-values"></a>
-  Enforce default values in the migrations themselves instead of in the
-  application layer.
+  Utilizar valores por default en las migraciones en lugar de ponerlos en la capa de aplicación.
 <sup>[[link](#default-migration-values)]</sup>
 
   ```Ruby
-  # bad - application enforced default value
+  # :(
   def amount
     self[:amount] or 0
   end
   ```
 
-  While enforcing table defaults only in Rails is suggested by many
-  Rails developers, it's an extremely brittle approach that
-  leaves your data vulnerable to many application bugs.  And you'll
-  have to consider the fact that most non-trivial apps share a
-  database with other applications, so imposing data integrity from
-  the Rails app is impossible.
-
 * <a name="foreign-key-constraints"></a>
-  Enforce foreign-key constraints. As of Rails 4.2, ActiveRecord
-  supports foreign key constraints natively.
+  Utilizar restricciones de foreign-key. 
   <sup>[[link](#foreign-key-constraints)]</sup>
 
 * <a name="change-vs-up-down"></a>
-  When writing constructive migrations (adding tables or columns),
-  use the `change` method instead of `up` and `down` methods.
+  Cuando se escriben migraciones que añaden tablas o columnas, utilizar el método `change` en lugar de los métodos `up` y `down`.
   <sup>[[link](#change-vs-up-down)]</sup>
 
   ```Ruby
-  # the old way
+  # :(
   class AddNameToPeople < ActiveRecord::Migration
     def up
       add_column :people, :name, :string
@@ -627,7 +616,7 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
     end
   end
 
-  # the new prefered way
+  # :)
   class AddNameToPeople < ActiveRecord::Migration
     def change
       add_column :people, :name, :string
@@ -636,63 +625,52 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
   ```
 
 * <a name="no-model-class-migrations"></a>
-  Don't use model classes in migrations. The model classes are constantly
-  evolving and at some point in the future migrations that used to work might
-  stop, because of changes in the models used.
+  No utilizar métodos de clase de los modelos en las migraciones por si el modelo cambia.
 <sup>[[link](#no-model-class-migrations)]</sup>
 
 ## Views
 
 * <a name="no-direct-model-view"></a>
-  Never call the model layer directly from a view.
+  Nunca llamar al modelo en las vistas.
 <sup>[[link](#no-direct-model-view)]</sup>
 
 * <a name="no-complex-view-formatting"></a>
-  Never make complex formatting in the views, export the formatting to a method
-  in the view helper or the model.
+  No utilizar formateo complejo en las vistas, exportar el formateo a un método en un helpero o modelo.
 <sup>[[link](#no-complex-view-formatting)]</sup>
 
 * <a name="partials"></a>
-  Mitigate code duplication by using partial templates and layouts.
+  Mitigar código duplicado utilizando partial y layouts.
 <sup>[[link](#partials)]</sup>
 
 ## Internationalization
 
 * <a name="locale-texts"></a>
-  No strings or other locale specific settings should be used in the views,
-  models and controllers. These texts should be moved to the locale files in the
-  `config/locales` directory.
+  Ningún string u otra configuración específica de localización debe ir en las vistas, modelos o controllers. Estos textos deben estar en los archivos ubicados en el directorio `config/locales`.
 <sup>[[link](#locale-texts)]</sup>
 
 * <a name="translated-labels"></a>
-  When the labels of an ActiveRecord model need to be translated, use the
-  `activerecord` scope:
+  Cuando los labels de un modelo ActiveRecord deben ser traducidos se debe utilizar el scope `activerecord`:
 <sup>[[link](#translated-labels)]</sup>
 
   ```
   en:
     activerecord:
       models:
-        user: Member
+        user: Miembro
       attributes:
         user:
-          name: 'Full name'
+          name: 'Nombre Completo'
   ```
 
-  Then `User.model_name.human` will return "Member" and
-  `User.human_attribute_name("name")` will return "Full name". These
-  translations of the attributes will be used as labels in the views.
+  Luego `User.model_name.human` retornará "Miembto" y
+  `User.human_attribute_name("name")` retornará "Nombre Completo". Estas traducciones serán utilizadas como labels en las vistas.
 
 
 * <a name="organize-locale-files"></a>
-  Separate the texts used in the views from translations of ActiveRecord
-  attributes. Place the locale files for the models in a folder `locales/models` and the
-  texts used in the views in folder `locales/views`.
+  Separar los textos de las vistas de las traducciones de los atributos ActiveRecord. Ubicar los archivos de localización en el directorio `locales/models` y los textos utilizados en las vistas en el directorio `locales/views`.
 <sup>[[link](#organize-locale-files)]</sup>
 
-  * When organization of the locale files is done with additional directories,
-    these directories must be described in the `application.rb` file in order
-    to be loaded.
+  * Cuando la organización de los archivos de localización se realiza en múltiples directorios, estos directorios deben ser configurados en el archivo `application.rb` para que sean incluídos.
 
       ```Ruby
       # config/application.rb
@@ -700,50 +678,45 @@ El objetivo de esta guía consiste en presentar un conjunto de buenas prácticas
       ```
 
 * <a name="shared-localization"></a>
-  Place the shared localization options, such as date or currency formats, in
-  files under the root of the `locales` directory.
+  Ubicar las opciones de localización generales, como fechas, moneda, en los archivos en la raíz del directorio `locales`.
 <sup>[[link](#shared-localization)]</sup>
 
 * <a name="short-i18n"></a>
-  Use the short form of the I18n methods: `I18n.t` instead of `I18n.translate`
-  and `I18n.l` instead of `I18n.localize`.
+  Utilizar la forma corta de los métodos I18n: `I18n.t` en lugar de `I18n.translate`
+  y `I18n.l` en lugar de `I18n.localize`.
 <sup>[[link](#short-i18n)]</sup>
 
 * <a name="lazy-lookup"></a>
-  Use "lazy" lookup for the texts used in views. Let's say we have the following
-  structure:
+  Utilizar "lazy" lookup para los textos de las vistas. Por ej, si tenemos:
 <sup>[[link](#lazy-lookup)]</sup>
 
   ```
   en:
     users:
       show:
-        title: 'User details page'
+        title: 'Detalles del usuario'
   ```
 
-  The value for `users.show.title` can be looked up in the template
-  `app/views/users/show.html.haml` like this:
+  El valor para `users.show.title` puede ser utilizado en `app/views/users/show.html.haml` de esta forma:
 
   ```Ruby
   = t '.title'
   ```
 
 * <a name="dot-separated-keys"></a>
-  Use the dot-separated keys in the controllers and models instead of specifying
-  the `:scope` option. The dot-separated call is easier to read and trace the
-  hierarchy.
+  Utilizar la sintaxis de punto en controllers y models en lugar de especificar la opción `:scope`.
 <sup>[[link](#dot-separated-keys)]</sup>
 
   ```Ruby
-  # bad
+  # :(
   I18n.t :record_invalid, scope: [:activerecord, :errors, :messages]
 
-  # good
+  # :)
   I18n.t 'activerecord.errors.messages.record_invalid'
   ```
 
 * <a name="i18n-guides"></a>
-  More detailed information about the Rails I18n can be found in the [Rails
+  Más información de Rails I18n: [Rails
   Guides](http://guides.rubyonrails.org/i18n.html)
 <sup>[[link](#i18n-guides)]</sup>
 
